@@ -3,44 +3,30 @@ const insert = (str, index, insertStr) => {
 }
 
 export const checkEmail = (email) => {
-  return /^[^а-яА-Я]*[^\.а-яА-Я]{1}[@][^\.а-яА-Я]+[^а-яА-Я]?[^\.а-яА-Я]+[.][^\.а-яА-Я]{2}[^а-яА-Я]{0,}$/.test(email)
+  if(email.length > 30) return false
+  return /^[-.0-9_a-zA-Z]{0,}[-0-9_a-zA-Z]+@[-0-9_a-zA-Z]+[-.0-9_a-zA-Z]?[-0-9_a-zA-Z]+\.[-0-9_a-zA-Z]+[-0-9_a-zA-Z]+[-.0-9_a-zA-Z]?$/.test(email)
 }
 
 export const checkPhoneNumber = (str) => {
-  if (str.length !== 18) return false 
-  // проверка на оператора
-  if (['1', '2', '7'].includes(str[4])) return false
+  if (str.length < 11) return
+  const operatorCode = str.match(/[(][0-9]{3}[)]/)?.[0]
+  if (operatorCode) {
+    if (['1', '2', '7'].includes(operatorCode[1])) return false
+  } else {
+    if (['1', '2', '7'].includes(str.slice(-10, -9))) return false
+  }
   return true
+}
+
+export const formattingPhoneNumber = (value, cb) => {
+  value = value.match(/[0-9]*/g).join('')
+  if (value.length < 11) return
+  value = `+${value.slice(0, -10)} (${value.slice(-10,-7)}) ${value.slice(-7,-4)}-${value.slice(-4,-2)}-${value.slice(-2)}`
+  cb(value)
 }
 
 export const editPhoneNumber = (value, cb) => {
   value = value.match(/[0-9]*/g).filter(s => !!s).join('')
-  if (value) {
-    if (value[0] === '8') {
-      value = '+7' + value.slice(1)
-    } else if (value[0] === '7') {
-      value = '+' + value
-    } else if (value[0] !== '7') {
-      value = '+7' + value
-    }
-  }
-
-  if (value.length > 12) {
-    value = value.slice(0, 12)
-  }
-  if (value.length > 10) {
-    value = value.slice(0, 10) + '-' + value.slice(10)
-  }
-  if (value.length > 8) {
-    value = insert(value, 8, '-')
-  }
-  if (value.length > 5) {
-    value = insert(value, 5, ') ')
-  }
-  if (value.length > 2) {
-    value = insert(value, 2, ' (')
-  }
-
   cb(value)
 }
 

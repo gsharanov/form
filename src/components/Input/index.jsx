@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import style from './style.module.css'
-import { editDate, editPhoneNumber, checkPhoneNumber, checkEmail } from './helper'
+import { editDate, editPhoneNumber, checkPhoneNumber, checkEmail, formattingPhoneNumber } from './helper'
 
 /**
  * @param {string} label - заголово
@@ -37,7 +37,10 @@ const Input = ({ label, type, className: cn, isCheck, validator, required, norma
     } else {
       // стандартная валидация по типу данных
       switch(type) {
-        case 'phone-number': return setIsValid(checkPhoneNumber(value))
+        case 'phone-number': {
+          setIsValid(checkPhoneNumber(value))
+          return formattingPhoneNumber(value, setValue)
+        }
         case 'email': return setIsValid(checkEmail(value))
         default: setValue(value)
       }
