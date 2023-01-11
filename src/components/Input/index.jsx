@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
-import style from './style.module.css'
-import { editDate, editPhoneNumber, checkPhoneNumber, checkEmail, formattingPhoneNumber } from './helper'
+import { useEffect, useRef, useState } from 'react';
+import style from './style.module.css';
+import { editDate, editPhoneNumber, checkPhoneNumber, checkEmail, formattingPhoneNumber } from './helper';
 
 /**
  * @param {string} label - заголово
@@ -13,55 +13,55 @@ import { editDate, editPhoneNumber, checkPhoneNumber, checkEmail, formattingPhon
  * @param {funсtion} onChangeValue - callback срабатывает после изменения даннх на вход получает строку
  */
 const Input = ({ label, type, className: cn, isCheck, validator, required, normalize, onChangeValue }) => {
-  const [value, setValue] = useState('')
-  const [inFocus , setInFocus] = useState(false)
-  const [isValid, setIsValid] = useState(true)
-  const inputRef = useRef(null)
+  const [value, setValue] = useState('');
+  const [inFocus , setInFocus] = useState(false);
+  const [isValid, setIsValid] = useState(true);
+  const inputRef = useRef(null);
 
   const getLabelClass = () => {
-    let className = style.label
+    let className = style.label;
     if (inFocus || inputRef.current?.value) 
-      className += ' ' + style.labelFocus
-    return className
-  }
+      className += ' ' + style.labelFocus;
+    return className;
+  };
 
   useEffect(() => {
-    if (!isCheck) return
-    const { value } = inputRef.current
+    if (!isCheck) return;
+    const { value } = inputRef.current;
 
-    if (required && !inputRef.current.value) return setIsValid(false)
+    if (required && !inputRef.current.value) return setIsValid(false);
 
     if (validator) {
       // не стандартная валидация
-      setIsValid(validator(value))
+      setIsValid(validator(value));
     } else {
       // стандартная валидация по типу данных
       switch(type) {
         case 'phone-number': {
-          setIsValid(checkPhoneNumber(value))
-          return formattingPhoneNumber(value, setValue)
+          setIsValid(checkPhoneNumber(value));
+          return formattingPhoneNumber(value, setValue);
         }
-        case 'email': return setIsValid(checkEmail(value))
-        default: setValue(value)
+        case 'email': return setIsValid(checkEmail(value));
+        default: setValue(value);
       }
     }
-  }, [isCheck])
+  }, [isCheck]);
 
   const onChange = (e) => {
-    const {value} = e.target
-    if (!isValid) setIsValid(true) // если поле обновилось сбрасываем не валидность
+    const {value} = e.target;
+    if (!isValid) setIsValid(true); // если поле обновилось сбрасываем не валидность
     // нормализация
-    if (normalize) return setValue(normalize(value))
+    if (normalize) return setValue(normalize(value));
     switch(type) {
-      case 'phone-number': return editPhoneNumber(value, setValue)
-      case 'date': return editDate(value, setValue)
-      default: setValue(value)
+      case 'phone-number': return editPhoneNumber(value, setValue);
+      case 'date': return editDate(value, setValue);
+      default: setValue(value);
     }
-  }
+  };
 
   useEffect(() => {
-    if (onChangeValue) onChangeValue(value)
-  }, [value])
+    if (onChangeValue) onChangeValue(value);
+  }, [value]);
 
   return (
     <div className={`${style.container} ${isValid ? '': style.error} ${cn ?? ''}`}>
@@ -73,7 +73,7 @@ const Input = ({ label, type, className: cn, isCheck, validator, required, norma
         onBlur={() => setInFocus(false)}
       ></input>
     </div>
-  )
-}
+  );
+};
 
-export default Input
+export default Input;

@@ -1,1 +1,1 @@
-export { default as UserDataForm } from './UserDataForm'
+export { default as UserDataForm } from './UserDataForm';

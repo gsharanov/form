@@ -1,18 +1,18 @@
-import { useState } from 'react'
-import { Form, Input, Button } from '../../../../components'
-import style from './style.module.css'
-import { checkDate, checkFullName, editFullName } from './helper'
+import { useState } from 'react';
+import { Form, Input, Button } from '../../../../components';
+import style from './style.module.css';
+import { checkDate, checkFullName, editFullName } from './helper';
 
 const UserDataForm = () => {
-  const [isCheck, setIsCheck] = useState(false)
-  const onValidate = () => setIsCheck(true)
+  const [isCheck, setIsCheck] = useState(false);
+  const onValidate = () => setIsCheck(true);
 
   const commonParams = {
     isCheck:isCheck,
     required: true,
     className: style.input,
     onChangeValue: () => setIsCheck(false),
-  }
+  };
 
   return (
     <Form className={style.container}>
@@ -41,12 +41,9 @@ const UserDataForm = () => {
           {...commonParams}
         />
       </div>
-      <Button
-        name='Продолжить'
-        onClick={onValidate}
-      />
+      <Button onClick={onValidate}>Продолжить</Button>
     </Form>
-  )
-}
+  );
+};
 
-export default UserDataForm
+export default UserDataForm;
