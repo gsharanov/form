@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Form, Input, Button } from '../../../../components';
 import style from './style.module.css';
 import { checkDate, checkFullName, editFullName } from './helper';
+import { inputTypes } from '../../../../constants';
 
 const UserDataForm = () => {
   const [isCheck, setIsCheck] = useState(false);
@@ -19,24 +20,24 @@ const UserDataForm = () => {
       <div className={style.body}>
         <Input
           label='ФИО'
-          type="userName"
+          type={inputTypes.USER_NAME}
           validator={checkFullName}
           normalize={editFullName}
           {...commonParams}
         />
         <Input
           label='Телефон'
-          type="phone-number"
+          type={inputTypes.PHONE_NUMBER}
           {...commonParams}
         />
         <Input
           label='Email'
-          type="email"
+          type={inputTypes.EMAIL}
           {...commonParams}
         />
         <Input
           label='Дата'
-          type="date"
+          type={inputTypes.DATE}
           validator={checkDate}
           {...commonParams}
         />

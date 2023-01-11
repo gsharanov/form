@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import style from './style.module.css';
 import { editDate, editPhoneNumber, checkPhoneNumber, checkEmail, formattingPhoneNumber } from './helper';
+import { inputTypes } from '../../constants';
 
 /**
  * @param {string} label - заголово
@@ -37,11 +38,11 @@ const Input = ({ label, type, className: cn, isCheck, validator, required, norma
     } else {
       // стандартная валидация по типу данных
       switch(type) {
-        case 'phone-number': {
+        case inputTypes.PHONE_NUMBER: {
           setIsValid(checkPhoneNumber(value));
           return formattingPhoneNumber(value, setValue);
         }
-        case 'email': return setIsValid(checkEmail(value));
+        case inputTypes.EMAIL: return setIsValid(checkEmail(value));
         default: setValue(value);
       }
     }
@@ -53,8 +54,8 @@ const Input = ({ label, type, className: cn, isCheck, validator, required, norma
     // нормализация
     if (normalize) return setValue(normalize(value));
     switch(type) {
-      case 'phone-number': return editPhoneNumber(value, setValue);
-      case 'date': return editDate(value, setValue);
+      case inputTypes.PHONE_NUMBER: return editPhoneNumber(value, setValue);
+      case inputTypes.DATE: return editDate(value, setValue);
       default: setValue(value);
     }
   };
