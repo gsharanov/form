@@ -30,16 +30,48 @@ export const editPhoneNumber = (value, cb) => {
   cb(value);
 };
 
-export const editDate = (value, cb) => {
-  value = value.match(/[0-9]*/g).filter(s => !!s).join('');
+export const editDate = (value, cb, newValue, cursorIndex, inputRef) => {
+  const template = "ДД.ММ.ГГГГ";
+  const selectionStart = inputRef.current.selectionStart;
+  const isAddSimol = value.length < newValue.length
+  let cursorOffset = 0;
 
-  if(value.length > 8) {
-    value = value.slice(0, 8);
+  console.log(newValue, selectionStart)
+  if (isAddSimol && newValue[selectionStart - 1].search(/\d/))
+    return setTimeout(() => {
+      inputRef.current.selectionStart = inputRef.current.selectionEnd = cursorIndex.current;
+    });
+
+
+  if (newValue.length === 1) {
+    cursorIndex.current = selectionStart + cursorOffset;
+    return cb(newValue + template.slice(1))
   }
-  if (value.length > 4)
-    value = insert(value, 4, '.');
-  if (value.length > 2)
-    value = insert(value, 2, '.');
 
-  cb(value);
+  if (isAddSimol) {
+    if ([2, 5].includes(selectionStart)) {
+      cursorOffset = 1
+    }
+    newValue = newValue.slice(0, selectionStart) + newValue.slice(selectionStart + 1)
+    if ([3, 6].includes(selectionStart)) {
+      newValue = newValue.slice(0, selectionStart - 1) + template.slice(selectionStart - 1, selectionStart) + newValue[selectionStart - 1] + newValue.slice(selectionStart + 1);
+      cursorOffset += 1;
+    }
+  } else {
+    newValue = newValue.slice(0, selectionStart) + template.slice(selectionStart, selectionStart + 1) + newValue.slice(selectionStart)
+    if ([2, 5].includes(selectionStart)) {
+      newValue = newValue.slice(0, selectionStart - 1) + template.slice(selectionStart - 1, selectionStart) + newValue.slice(selectionStart)
+      cursorOffset = -1
+    }
+  }
+
+  cursorIndex.current = selectionStart + cursorOffset;
+
+  if (newValue === template) return cb('')
+  if (newValue === value) {
+    setTimeout(() => {
+      inputRef.current.selectionStart = inputRef.current.selectionEnd = cursorIndex.current;
+    });
+  }
+  cb(newValue.slice(0, template.length));
 };

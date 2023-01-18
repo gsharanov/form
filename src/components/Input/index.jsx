@@ -2,22 +2,14 @@ import { useEffect, useRef, useState } from 'react';
 import style from './style.module.css';
 import { editDate, editPhoneNumber, checkPhoneNumber, checkEmail, formattingPhoneNumber } from './helper';
 import { inputTypes } from '../../constants';
+import { useLayoutEffect } from 'react';
 
-/**
- * @param {string} label - заголово
- * @param {string} type - тип данных (phone-number | date)
- * @param {string} className - добавляет класс к общему контейнеру
- * @param {boolean} isCheck - необходимо ли валидирирова поле
- * @param {boolean} required - Обязательное ли поле
- * @param {funсtion} validator - функция для валидации, в случае если не устраивает стандартная (return true | false)
- * @param {funсtion} normalize - Для нормализации данных принимает строку (return string)
- * @param {funсtion} onChangeValue - callback срабатывает после изменения даннх на вход получает строку
- */
 const Input = ({ label, type, className: cn, isCheck, validator, required, normalize, onChangeValue }) => {
   const [value, setValue] = useState('');
   const [inFocus , setInFocus] = useState(false);
   const [isValid, setIsValid] = useState(true);
   const inputRef = useRef(null);
+  const cursorIndex = useRef(null);
 
   const getLabelClass = () => {
     let className = style.label;
@@ -25,6 +17,22 @@ const Input = ({ label, type, className: cn, isCheck, validator, required, norma
       className += ' ' + style.labelFocus;
     return className;
   };
+
+  const getPlaceholder = () => {
+    if (!inFocus) return '';
+
+    switch(type) {
+      case inputTypes.DATE: return 'ДД.ММ.ГГГГ';
+      default: return '';
+    }
+  };
+
+  useEffect(() => {
+    if (typeof cursorIndex.current === 'number') {
+      inputRef.current.selectionStart = inputRef.current.selectionEnd = cursorIndex.current
+    }
+  });
+
 
   useEffect(() => {
     if (!isCheck) return;
@@ -49,20 +57,20 @@ const Input = ({ label, type, className: cn, isCheck, validator, required, norma
   }, [isCheck]);
 
   const onChange = (e) => {
-    const {value} = e.target;
+    const {value: newValue} = e.target;
     if (!isValid) setIsValid(true); // если поле обновилось сбрасываем не валидность
     // нормализация
-    if (normalize) return setValue(normalize(value));
+    if (normalize) return setValue(normalize(newValue));
     switch(type) {
-      case inputTypes.PHONE_NUMBER: return editPhoneNumber(value, setValue);
-      case inputTypes.DATE: return editDate(value, setValue);
-      default: setValue(value);
+      case inputTypes.PHONE_NUMBER: return editPhoneNumber(newValue, setValue);
+      case inputTypes.DATE: return editDate(value, setValue, newValue, cursorIndex, inputRef);
+      default: setValue(newValue);
     }
   };
 
   useEffect(() => {
     if (onChangeValue) onChangeValue(value);
-  }, [value]);
+  }, [value, onChangeValue]);
 
   return (
     <div className={`${style.container} ${isValid ? '': style.error} ${cn ?? ''}`}>
@@ -70,6 +78,7 @@ const Input = ({ label, type, className: cn, isCheck, validator, required, norma
       <input ref={inputRef} className={style.input}
         value={value}
         onChange={onChange}
+        placeholder={getPlaceholder()}
         onFocus={() => setInFocus(true)}
         onBlur={() => setInFocus(false)}
       ></input>
